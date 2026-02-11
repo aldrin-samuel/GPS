@@ -39,9 +39,9 @@ async function loadSchemes() {
     profile.age <= s.max_age &&
     profile.income >= s.min_income &&
     profile.income <= s.max_income &&
-    (s.gender === "all" || s.gender === profile.gender) &&
-    (s.caste === "all" || s.caste === profile.caste) &&
-    (s.state === "all" || s.state === profile.state)
+    (s.gender === "BOTH" || s.gender === profile.gender) &&
+    (s.caste === "ANY" || s.caste === profile.caste) &&
+    (s.state === "ANY" || s.state === profile.state)
   );
 
   const list = document.getElementById("schemesList");
