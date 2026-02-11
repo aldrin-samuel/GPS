@@ -26,26 +26,48 @@ async function loadSchemes() {
 
   const userId = userData.user.id;
 
-  const { data: profile } = await db
+  const { data: profile, error: profileError } = await db
     .from("profiles")
     .select("*")
     .eq("id", userId)
     .single();
 
-  const { data: schemes } = await db.from("schemes").select("*");
+  console.log("PROFILE:", profile);
 
-  const eligible = schemes.filter(s =>
-    profile.age >= s.min_age &&
-    profile.age <= s.max_age &&
-    profile.income >= s.min_income &&
-    profile.income <= s.max_income &&
-    (s.gender === "BOTH" || s.gender === profile.gender) &&
-    (s.caste === "ANY" || s.caste === profile.caste) &&
-    (s.state === "ANY" || s.state === profile.state)
-  );
+  const { data: schemes, error: schemesError } = await db
+    .from("schemes")
+    .select("*");
+
+  console.log("ALL SCHEMES:", schemes);
+
+  if (!profile || !schemes) {
+    alert("Profile or schemes not found");
+    return;
+  }
+
+  const eligible = schemes.filter(s => {
+    const match =
+      profile.age >= s.min_age &&
+      profile.age <= s.max_age &&
+      profile.income >= s.min_income &&
+      profile.income <= s.max_income &&
+      (s.gender === "BOTH" || s.gender.toLowerCase() === profile.gender.toLowerCase()) &&
+      (s.caste === "ANY" || s.caste.toLowerCase() === profile.caste.toLowerCase()) &&
+      (s.state === "ANY" || s.state.toLowerCase() === profile.state.toLowerCase());
+
+    console.log("CHECK:", s.scheme_name, match);
+    return match;
+  });
+
+  console.log("ELIGIBLE:", eligible);
 
   const list = document.getElementById("schemesList");
   list.innerHTML = "";
+
+  if (eligible.length === 0) {
+    list.innerHTML = "<li>❌ No eligible schemes found</li>";
+    return;
+  }
 
   eligible.forEach(s => {
     const li = document.createElement("li");
@@ -53,6 +75,7 @@ async function loadSchemes() {
     list.appendChild(li);
   });
 }
+
 
 loadSchemes();
 </script>
