@@ -46,18 +46,45 @@ async function loadSchemes() {
   }
 
   const eligible = schemes.filter(s => {
-    const match =
-      profile.age >= s.min_age &&
-      profile.age <= s.max_age &&
-      profile.income >= s.min_income &&
-      profile.income <= s.max_income &&
-      (s.gender === "BOTH" || s.gender.toLowerCase() === profile.gender.toLowerCase()) &&
-      (s.caste === "ANY" || s.caste.toLowerCase() === profile.caste.toLowerCase()) &&
-      (s.state === "ANY" || s.state.toLowerCase() === profile.state.toLowerCase());
+  const age = Number(profile.age);
+  const income = Number(profile.income);
 
-    console.log("CHECK:", s.scheme_name, match);
-    return match;
+  const minAge = Number(s.min_age);
+  const maxAge = Number(s.max_age);
+  const minIncome = Number(s.min_income);
+  const maxIncome = Number(s.max_income);
+
+  const genderMatch =
+    s.gender.toLowerCase().trim() === "any" ||
+    s.gender.toLowerCase().trim() === profile.gender.toLowerCase().trim();
+
+  const casteMatch =
+    s.caste.toLowerCase().trim() === "any" ||
+    s.caste.toLowerCase().trim() === profile.caste.toLowerCase().trim();
+
+  const stateMatch =
+    s.state.toLowerCase().trim() === "any" ||
+    s.state.toLowerCase().trim() === profile.state.toLowerCase().trim();
+
+  const match =
+    age >= minAge &&
+    age <= maxAge &&
+    income >= minIncome &&
+    income <= maxIncome &&
+    genderMatch &&
+    casteMatch &&
+    stateMatch;
+
+  console.log("CHECK:", s.scheme_name, {
+    age, minAge, maxAge,
+    income, minIncome, maxIncome,
+    genderMatch, casteMatch, stateMatch,
+    match
   });
+
+  return match;
+});
+
 
   console.log("ELIGIBLE:", eligible);
 
