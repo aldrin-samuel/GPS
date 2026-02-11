@@ -2,12 +2,13 @@
 <html>
 <head>
   <title>Eligible Schemes</title>
+  <link rel="stylesheet" href="schemes.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
 <h2>Eligible Schemes</h2>
-<ul id="schemesList"></ul>
+<div id="schemesList" class="schemes-container"></div>
 
 <script>
 const SUPABASE_URL = "https://glhrtvlhqgamjaqwwehe.supabase.co";
@@ -26,19 +27,13 @@ async function loadSchemes() {
 
   const userId = userData.user.id;
 
-  const { data: profile, error: profileError } = await db
+  const { data: profile } = await db
     .from("profiles")
     .select("*")
     .eq("id", userId)
     .single();
 
-  console.log("PROFILE:", profile);
-
-  const { data: schemes, error: schemesError } = await db
-    .from("schemes")
-    .select("*");
-
-  console.log("ALL SCHEMES:", schemes);
+  const { data: schemes } = await db.from("schemes").select("*");
 
   if (!profile || !schemes) {
     alert("Profile or schemes not found");
@@ -46,44 +41,52 @@ async function loadSchemes() {
   }
 
   const eligible = schemes.filter(s => {
-  const profileState = profile.state.trim().toLowerCase();
-  const profileGender = profile.gender.trim().toLowerCase();
-  const profileCaste = profile.caste.trim().toLowerCase();
+    const profileState = profile.state.trim().toLowerCase();
+    const profileGender = profile.gender.trim().toLowerCase();
+    const profileCaste = profile.caste.trim().toLowerCase();
 
-  const schemeState = s.state.trim().toLowerCase();
-  const schemeGender = s.gender.trim().toLowerCase();
-  const schemeCaste = s.caste.trim().toLowerCase();
+    const schemeState = s.state.trim().toLowerCase();
+    const schemeGender = s.gender.trim().toLowerCase();
+    const schemeCaste = s.caste.trim().toLowerCase();
 
-  return (
-    profile.age >= s.min_age &&
-    profile.age <= s.max_age &&
-    profile.income >= s.min_income &&
-    profile.income <= s.max_income &&
-    (schemeGender === "any" || schemeGender === profileGender) &&
-    (schemeCaste === "any" || schemeCaste === profileCaste) &&
-    (schemeState === "any" || schemeState === profileState)
-  );
-});
+    return (
+      profile.age >= s.min_age &&
+      profile.age <= s.max_age &&
+      profile.income >= s.min_income &&
+      profile.income <= s.max_income &&
+      (schemeGender === "any" || schemeGender === profileGender) &&
+      (schemeCaste === "any" || schemeCaste === profileCaste) &&
+      (schemeState === "any" || schemeState === profileState)
+    );
+  });
 
-
-
-  console.log("ELIGIBLE:", eligible);
-
-  const list = document.getElementById("schemesList");
-  list.innerHTML = "";
+  const container = document.getElementById("schemesList");
+  container.innerHTML = "";
 
   if (eligible.length === 0) {
-    list.innerHTML = "<li>❌ No eligible schemes found</li>";
+    container.innerHTML = `<div class="empty-msg">❌ No eligible schemes found</div>`;
     return;
   }
 
   eligible.forEach(s => {
-    const li = document.createElement("li");
-    li.innerHTML = `<b>${s.scheme_name}</b> - ${s.description}`;
-    list.appendChild(li);
+    const card = document.createElement("div");
+    card.className = "scheme-card";
+
+    card.innerHTML = `
+      <div class="scheme-title">${s.scheme_name}</div>
+      <div class="scheme-desc">${s.description}</div>
+      <div class="scheme-meta">
+        <div><b>Age:</b> ${s.min_age} - ${s.max_age}</div>
+        <div><b>Income:</b> ${s.min_income} - ${s.max_income}</div>
+        <div><b>Gender:</b> ${s.gender}</div>
+        <div><b>Caste:</b> ${s.caste}</div>
+        <div><b>State:</b> ${s.state}</div>
+      </div>
+    `;
+
+    container.appendChild(card);
   });
 }
-
 
 loadSchemes();
 </script>
