@@ -9,10 +9,10 @@
 <body>
 
 <div class="page-wrapper">
-    <div class="navbar">
-  <h3>Scheme Finder</h3>
-  <button onclick="logout()">Logout</button>
-</div>
+  <div class="navbar">
+    <h3>Scheme Finder</h3>
+    <button onclick="logout()">Logout</button>
+  </div>
 
   <h2>Eligible Schemes</h2>
   <div id="schemesList" class="schemes-container"></div>
@@ -22,18 +22,20 @@
 const SUPABASE_URL = "https://glhrtvlhqgamjaqwwehe.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsaHJ0dmxocWdhbWphcXd3ZWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxOTQ4NjYsImV4cCI6MjA4NTc3MDg2Nn0.2w9PaGy7kTKmJ9oBUxZ_E8awGViyYvDZEt1FxrpCQ4Y";
 
+
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 async function loadSchemes() {
-  const { data: userData } = await db.auth.getUser();
+  const { data: { user } } = await db.auth.getUser();
 
-  if (!userData.user) {
+  // ✅ If not logged in → back to login
+  if (!user) {
     window.location.href = "index.html";
     return;
   }
 
-  const userId = userData.user.id;
+  const userId = user.id;
 
   const { data: profile } = await db
     .from("profiles")
@@ -41,30 +43,23 @@ async function loadSchemes() {
     .eq("id", userId)
     .single();
 
-  const { data: schemes } = await db.from("schemes").select("*");
-
-  if (!profile || !schemes) {
-    alert("Profile or schemes not found");
+  // ✅ If profile not exists → go to profile page
+  if (!profile) {
+    window.location.href = "profile.html";
     return;
   }
 
+  const { data: schemes } = await db.from("schemes").select("*");
+
   const eligible = schemes.filter(s => {
-    const profileState = profile.state.trim().toLowerCase();
-    const profileGender = profile.gender.trim().toLowerCase();
-    const profileCaste = profile.caste.trim().toLowerCase();
-
-    const schemeState = s.state.trim().toLowerCase();
-    const schemeGender = s.gender.trim().toLowerCase();
-    const schemeCaste = s.caste.trim().toLowerCase();
-
     return (
       profile.age >= s.min_age &&
       profile.age <= s.max_age &&
       profile.income >= s.min_income &&
       profile.income <= s.max_income &&
-      (schemeGender === "any" || schemeGender === profileGender) &&
-      (schemeCaste === "any" || schemeCaste === profileCaste) &&
-      (schemeState === "any" || schemeState === profileState)
+      (s.gender === "any" || s.gender.toLowerCase() === profile.gender.toLowerCase()) &&
+      (s.caste === "any" || s.caste.toLowerCase() === profile.caste.toLowerCase()) &&
+      (s.state === "any" || s.state.toLowerCase() === profile.state.toLowerCase())
     );
   });
 
@@ -77,31 +72,30 @@ async function loadSchemes() {
   }
 
   eligible.forEach(s => {
-  const card = document.createElement("div");
-  card.className = "scheme-card";
+    const card = document.createElement("div");
+    card.className = "scheme-card";
 
-  card.innerHTML = `
-    <div class="scheme-title">${s.scheme_name}</div>
-    <div class="scheme-desc">${s.description}</div>
+    card.innerHTML = `
+      <div class="scheme-title">${s.scheme_name}</div>
+      <div class="scheme-desc">${s.description}</div>
 
-    <div class="scheme-meta">
-      <div><span>Age:</span> ${s.min_age} - ${s.max_age}</div>
-      <div><span>Income:</span> ${s.min_income} - ${s.max_income}</div>
-      <div><span>Gender:</span> ${s.gender}</div>
-      <div><span>Caste:</span> ${s.caste}</div>
-      <div><span>State:</span> ${s.state}</div>
-    </div>
-  `;
+      <div class="scheme-meta">
+        <div>Age: ${s.min_age} - ${s.max_age}</div>
+        <div>Income: ${s.min_income} - ${s.max_income}</div>
+        <div>Gender: ${s.gender}</div>
+        <div>Caste: ${s.caste}</div>
+        <div>State: ${s.state}</div>
+      </div>
+    `;
 
-  container.appendChild(card);
-});
-
+    container.appendChild(card);
+  });
 }
+
 async function logout() {
   await db.auth.signOut();
   window.location.href = "index.html";
 }
-
 
 loadSchemes();
 </script>
