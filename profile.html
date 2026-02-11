@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html>
 <head>
   <title>Create Profile</title>
+  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<h2>Create Profile</h2>
+<div class="container">
+  <h2>Create Profile</h2>
 
-<input type="text" id="name" placeholder="Name"><br><br>
-<input type="number" id="age" placeholder="Age"><br><br>
-<input type="text" id="gender" placeholder="Gender (male/female/any)"><br><br>
-<input type="number" id="income" placeholder="Income"><br><br>
-<input type="text" id="caste" placeholder="Caste (general/obc/sc/st/any)"><br><br>
-<input type="text" id="state" placeholder="State (tamil nadu/any)"><br><br>
+  <input type="text" id="name" placeholder="Name">
+  <input type="number" id="age" placeholder="Age">
+  <input type="text" id="gender" placeholder="Gender">
+  <input type="number" id="income" placeholder="Income">
+  <input type="text" id="caste" placeholder="Caste">
+  <input type="text" id="state" placeholder="State">
 
-<button onclick="saveProfile()">Save Profile</button>
-
+  <button onclick="saveProfile()">Save Profile</button>
+</div>
 <script>
 const SUPABASE_URL = "https://glhrtvlhqgamjaqwwehe.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsaHJ0dmxocWdhbWphcXd3ZWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxOTQ4NjYsImV4cCI6MjA4NTc3MDg2Nn0.2w9PaGy7kTKmJ9oBUxZ_E8awGViyYvDZEt1FxrpCQ4Y";

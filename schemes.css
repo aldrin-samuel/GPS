@@ -1,0 +1,79 @@
+body {
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #0f172a, #1e1b2e);
+  margin: 0;
+  padding: 30px;
+  color: white;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 26px;
+  letter-spacing: 1px;
+}
+
+/* Grid container */
+.schemes-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+/* Card style (glass effect) */
+.scheme-card {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 22px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+  transition: all 0.3s ease;
+
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scheme-card:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-6px);
+}
+
+/* Title */
+.scheme-title {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+/* Description */
+.scheme-desc {
+  color: #d1d5db;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Meta info */
+.scheme-meta div {
+  color: #e5e7eb;
+  font-size: 0.9rem;
+}
+
+.scheme-meta b {
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+/* Empty message */
+.empty-msg {
+  text-align: center;
+  font-size: 18px;
+  color: #ef4444;
+  margin-top: 50px;
+}
