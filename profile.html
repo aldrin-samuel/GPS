@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create Profile</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<h2>Create Profile</h2>
+
+<input type="text" id="name" placeholder="Name"><br><br>
+<input type="number" id="age" placeholder="Age"><br><br>
+<input type="text" id="gender" placeholder="Gender"><br><br>
+<input type="number" id="income" placeholder="Income"><br><br>
+<input type="text" id="caste" placeholder="Caste"><br><br>
+<input type="text" id="state" placeholder="State"><br><br>
+
+<button onclick="saveProfile()">Save Profile</button>
+
+<script>
+const SUPABASE_URL = "https://glhrtvlhqgamjaqwwehe.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsaHJ0dmxocWdhbWphcXd3ZWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxOTQ4NjYsImV4cCI6MjA4NTc3MDg2Nn0.2w9PaGy7kTKmJ9oBUxZ_E8awGViyYvDZEt1FxrpCQ4Y";
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+window.saveProfile = async function () {
+  const { data: userData } = await db.auth.getUser();
+
+  if (!userData.user) {
+    alert("Please login first");
+    window.location.href = "index.html";
+    return;
+  }
+
+  const profile = {
+    id: userData.user.id,
+    name: document.getElementById("name").value,
+    age: parseInt(document.getElementById("age").value),
+    gender: document.getElementById("gender").value,
+    income: parseInt(document.getElementById("income").value),
+    caste: document.getElementById("caste").value,
+    state: document.getElementById("state").value
+  };
+
+  const { error } = await db.from("profiles").insert(profile);
+
+  if (error) {
+    alert("Error creating profile");
+    console.error(error);
+    return;
+  }
+
+  window.location.href = "schemes.html";
+};
+</script>
+
+</body>
+</html>

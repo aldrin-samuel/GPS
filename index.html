@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Scheme Finder</title>
+  <title>Login - Scheme Finder</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -10,106 +10,47 @@
 <input type="email" id="email" placeholder="Enter email">
 <button onclick="login()">Login</button>
 
-<h2>Create Profile</h2>
-<input type="text" id="name" placeholder="Name"><br><br>
-<input type="number" id="age" placeholder="Age"><br><br>
-<input type="text" id="gender" placeholder="Gender (male/female)"><br><br>
-<input type="number" id="income" placeholder="Income"><br><br>
-<input type="text" id="caste" placeholder="Caste"><br><br>
-<input type="text" id="state" placeholder="State"><br><br>
-
-<button onclick="createProfile()">Create Profile & Find Schemes</button>
-
-<h2>Eligible Schemes</h2>
-<ul id="schemesList"></ul>
-
 <script>
-  const SUPABASE_URL = "https://glhrtvlhqgamjaqwwehe.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsaHJ0dmxocWdhbWphcXd3ZWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxOTQ4NjYsImV4cCI6MjA4NTc3MDg2Nn0.2w9PaGy7kTKmJ9oBUxZ_E8awGViyYvDZEt1FxrpCQ4Y";
+const SUPABASE_URL = "https://glhrtvlhqgamjaqwwehe.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsaHJ0dmxocWdhbWphcXd3ZWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxOTQ4NjYsImV4cCI6MjA4NTc3MDg2Nn0.2w9PaGy7kTKmJ9oBUxZ_E8awGViyYvDZEt1FxrpCQ4Y";
 
-  const { createClient } = supabase;
-  const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // ✅ IMPORTANT: make functions global
-  window.login = async function login() {
-    const email = document.getElementById("email").value;
+window.login = async function () {
+  const email = document.getElementById("email").value;
 
-    const { error } = await db.auth.signInWithOtp({ email });
+  const { error } = await db.auth.signInWithOtp({ email });
 
-    if (error) {
-      alert("Login failed");
-      console.error(error);
-    } else {
-      alert("Check your email for login link!");
-    }
+  if (error) {
+    alert("Login failed");
+  } else {
+    alert("Check your email and open the magic link.");
   }
+};
 
-  window.createProfile = async function createProfile() {
-    const { data: userData } = await db.auth.getUser();
+// 🔥 After redirect from magic link, check profile
+async function checkProfile() {
+  const { data: userData } = await db.auth.getUser();
 
-    if (!userData.user) {
-      alert("Please login first!");
-      return;
-    }
+  if (!userData.user) return;
 
-    const profile = {
-      id: userData.user.id,
-      name: document.getElementById("name").value,
-      age: parseInt(document.getElementById("age").value),
-      gender: document.getElementById("gender").value,
-      income: parseInt(document.getElementById("income").value),
-      caste: document.getElementById("caste").value,
-      state: document.getElementById("state").value
-    };
+  const userId = userData.user.id;
 
-    const { error } = await db.from("profiles").upsert(profile);
+  const { data: profile } = await db
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .single();
 
-    if (error) {
-      console.error(error);
-      alert("Profile creation failed");
-      return;
-    }
-
-    alert("Profile created!");
-    fetchEligibleSchemes(profile);
+  if (profile) {
+    window.location.href = "schemes.html";
+  } else {
+    window.location.href = "profile.html";
   }
+}
 
-  async function fetchEligibleSchemes(profile) {
-    const { data: schemes, error } = await db.from("schemes").select("*");
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    const eligible = schemes.filter(s =>
-      profile.age >= s.min_age &&
-      profile.age <= s.max_age &&
-      profile.income >= s.min_income &&
-      profile.income <= s.max_income &&
-      (s.gender === "all" || s.gender === profile.gender) &&
-      (s.caste === "all" || s.caste === profile.caste) &&
-      (s.state === "all" || s.state === profile.state)
-    );
-
-    displaySchemes(eligible);
-  }
-
-  function displaySchemes(schemes) {
-    const list = document.getElementById("schemesList");
-    list.innerHTML = "";
-
-    if (schemes.length === 0) {
-      list.innerHTML = "<li>No eligible schemes found</li>";
-      return;
-    }
-
-    schemes.forEach(s => {
-      const li = document.createElement("li");
-      li.innerHTML = `<b>${s.scheme_name}</b> - ${s.description}`;
-      list.appendChild(li);
-    });
-  }
+checkProfile();
 </script>
 
 </body>

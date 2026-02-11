@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Eligible Schemes</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<h2>Eligible Schemes</h2>
+<ul id="schemesList"></ul>
+
+<script>
+const SUPABASE_URL = "https://glhrtvlhqgamjaqwwehe.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsaHJ0dmxocWdhbWphcXd3ZWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxOTQ4NjYsImV4cCI6MjA4NTc3MDg2Nn0.2w9PaGy7kTKmJ9oBUxZ_E8awGViyYvDZEt1FxrpCQ4Y";
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function loadSchemes() {
+  const { data: userData } = await db.auth.getUser();
+
+  if (!userData.user) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  const userId = userData.user.id;
+
+  const { data: profile } = await db
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .single();
+
+  const { data: schemes } = await db.from("schemes").select("*");
+
+  const eligible = schemes.filter(s =>
+    profile.age >= s.min_age &&
+    profile.age <= s.max_age &&
+    profile.income >= s.min_income &&
+    profile.income <= s.max_income &&
+    (s.gender === "all" || s.gender === profile.gender) &&
+    (s.caste === "all" || s.caste === profile.caste) &&
+    (s.state === "all" || s.state === profile.state)
+  );
+
+  const list = document.getElementById("schemesList");
+  list.innerHTML = "";
+
+  eligible.forEach(s => {
+    const li = document.createElement("li");
+    li.innerHTML = `<b>${s.scheme_name}</b> - ${s.description}`;
+    list.appendChild(li);
+  });
+}
+
+loadSchemes();
+</script>
+
+</body>
+</html>
