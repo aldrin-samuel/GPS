@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login - Scheme Finder</title>
+  <title>Eligible Schemes</title>
+  <link rel="stylesheet" href="schemes.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<h2>Login</h2>
-<input type="email" id="email" placeholder="Enter email">
-<button onclick="login()">Login</button>
+<h2>Eligible Schemes</h2>
+<div id="schemesList" class="schemes-container"></div>
 
 <script>
 const SUPABASE_URL = "https://glhrtvlhqgamjaqwwehe.supabase.co";
@@ -17,23 +17,13 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-window.login = async function () {
-  const email = document.getElementById("email").value;
-
-  const { error } = await db.auth.signInWithOtp({ email });
-
-  if (error) {
-    alert("Login failed");
-  } else {
-    alert("Check your email and open the magic link.");
-  }
-};
-
-// 🔥 After redirect from magic link, check profile
-async function checkProfile() {
+async function loadSchemes() {
   const { data: userData } = await db.auth.getUser();
 
-  if (!userData.user) return;
+  if (!userData.user) {
+    window.location.href = "index.html";
+    return;
+  }
 
   const userId = userData.user.id;
 
@@ -43,14 +33,62 @@ async function checkProfile() {
     .eq("id", userId)
     .single();
 
-  if (profile) {
-    window.location.href = "schemes.html";
-  } else {
-    window.location.href = "profile.html";
+  const { data: schemes } = await db.from("schemes").select("*");
+
+  if (!profile || !schemes) {
+    alert("Profile or schemes not found");
+    return;
   }
+
+  const eligible = schemes.filter(s => {
+    const profileState = profile.state.trim().toLowerCase();
+    const profileGender = profile.gender.trim().toLowerCase();
+    const profileCaste = profile.caste.trim().toLowerCase();
+
+    const schemeState = s.state.trim().toLowerCase();
+    const schemeGender = s.gender.trim().toLowerCase();
+    const schemeCaste = s.caste.trim().toLowerCase();
+
+    return (
+      profile.age >= s.min_age &&
+      profile.age <= s.max_age &&
+      profile.income >= s.min_income &&
+      profile.income <= s.max_income &&
+      (schemeGender === "any" || schemeGender === profileGender) &&
+      (schemeCaste === "any" || schemeCaste === profileCaste) &&
+      (schemeState === "any" || schemeState === profileState)
+    );
+  });
+
+  const container = document.getElementById("schemesList");
+  container.innerHTML = "";
+
+  if (eligible.length === 0) {
+    container.innerHTML = `<div class="empty-msg">❌ No eligible schemes found</div>`;
+    return;
+  }
+
+  eligible.forEach(s => {
+    const card = document.createElement("div");
+    card.className = "scheme-card";
+
+    card.innerHTML = `
+      <div class="scheme-title">${s.scheme_name}</div>
+      <div class="scheme-desc">${s.description}</div>
+      <div class="scheme-meta">
+        <div><b>Age:</b> ${s.min_age} - ${s.max_age}</div>
+        <div><b>Income:</b> ${s.min_income} - ${s.max_income}</div>
+        <div><b>Gender:</b> ${s.gender}</div>
+        <div><b>Caste:</b> ${s.caste}</div>
+        <div><b>State:</b> ${s.state}</div>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
 }
 
-checkProfile();
+loadSchemes();
 </script>
 
 </body>
