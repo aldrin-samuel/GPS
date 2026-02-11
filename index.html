@@ -1,14 +1,16 @@
-<!DOCTYPE html>
-<html>
 <head>
-  <title>Eligible Schemes</title>
-  <link rel="stylesheet" href="schemes.css">
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<h2>Eligible Schemes</h2>
-<div id="schemesList" class="schemes-container"></div>
+<div class="container">
+  <h2>Login</h2>
+  <input type="email" id="email" placeholder="Email">
+  
+  <button onclick="login()">Login</button>
+</div>
 
 <script>
 const SUPABASE_URL = "https://glhrtvlhqgamjaqwwehe.supabase.co";

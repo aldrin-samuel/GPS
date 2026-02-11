@@ -9,6 +9,11 @@
 <body>
 
 <div class="page-wrapper">
+    <div class="navbar">
+  <h3>Scheme Finder</h3>
+  <button onclick="logout()">Logout</button>
+</div>
+
   <h2>Eligible Schemes</h2>
   <div id="schemesList" class="schemes-container"></div>
 </div>
@@ -72,24 +77,31 @@ async function loadSchemes() {
   }
 
   eligible.forEach(s => {
-    const box = document.createElement("div");
-    box.className = "scheme-card";
+  const card = document.createElement("div");
+  card.className = "scheme-card";
 
-    box.innerHTML = `
-      <div class="scheme-title">${s.scheme_name}</div>
-      <div class="scheme-desc">${s.description}</div>
-      <div class="scheme-info">
-        <span><b>Age:</b> ${s.min_age} - ${s.max_age}</span>
-        <span><b>Income:</b> ${s.min_income} - ${s.max_income}</span>
-        <span><b>Gender:</b> ${s.gender}</span>
-        <span><b>Caste:</b> ${s.caste}</span>
-        <span><b>State:</b> ${s.state}</span>
-      </div>
-    `;
+  card.innerHTML = `
+    <div class="scheme-title">${s.scheme_name}</div>
+    <div class="scheme-desc">${s.description}</div>
 
-    container.appendChild(box);
-  });
+    <div class="scheme-meta">
+      <div><span>Age:</span> ${s.min_age} - ${s.max_age}</div>
+      <div><span>Income:</span> ${s.min_income} - ${s.max_income}</div>
+      <div><span>Gender:</span> ${s.gender}</div>
+      <div><span>Caste:</span> ${s.caste}</div>
+      <div><span>State:</span> ${s.state}</div>
+    </div>
+  `;
+
+  container.appendChild(card);
+});
+
 }
+async function logout() {
+  await db.auth.signOut();
+  window.location.href = "index.html";
+}
+
 
 loadSchemes();
 </script>

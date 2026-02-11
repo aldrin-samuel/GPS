@@ -77,3 +77,20 @@ h2 {
   color: #ef4444;
   margin-top: 50px;
 }
+.scheme-meta {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #d1d5db;
+  line-height: 1.8;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 10px 12px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scheme-meta span {
+  color: #a78bfa;
+  font-weight: 600;
+}
