@@ -1,111 +1,118 @@
-/* ===== GLOBAL RESET ===== */
+/* ===== GLOBAL THEME ===== */
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: "Segoe UI", system-ui, sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
-/* ===== BODY STYLE ===== */
 body {
-  background: linear-gradient(135deg, #0f172a, #1e1b2e);
+  margin: 0;
+  background: linear-gradient(135deg, #0f172a, #020617);
   color: white;
   min-height: 100vh;
-  padding: 30px;
 }
 
-/* ===== HEADINGS ===== */
-h1, h2, h3 {
+/* ===== NAVBAR ===== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 30px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.navbar h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.nav-links {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-links a,
+.nav-links button {
+  color: white;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ===== PAGE CONTAINER ===== */
+.container {
+  max-width: 420px;
+  margin: 60px auto;
+  padding: 30px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+h2 {
   text-align: center;
   margin-bottom: 20px;
-  font-weight: 600;
-  letter-spacing: 1px;
 }
 
-/* ===== CONTAINER (CENTERED BOX) ===== */
-.container {
-  max-width: 450px;
-  margin: auto;
-  background: rgba(255, 255, 255, 0.08);
-  padding: 28px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-  backdrop-filter: blur(10px);
-}
-
-/* ===== INPUT FIELDS ===== */
-input, select {
+/* ===== INPUTS & DROPDOWNS ===== */
+input,
+select {
   width: 100%;
   padding: 12px 14px;
   margin-top: 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
   color: white;
   outline: none;
-  transition: 0.2s ease;
+  font-size: 14px;
+  transition: 0.2s;
 }
 
 input::placeholder {
   color: #9ca3af;
 }
 
-input:focus, select:focus {
-  border-color: #6366f1;
-  background: rgba(255, 255, 255, 0.1);
+select option {
+  background: #020617;
+  color: white;
 }
 
-/* ===== BUTTONS ===== */
+input:focus,
+select:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+/* ===== BUTTON ===== */
 button {
   width: 100%;
   margin-top: 18px;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: none;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
   color: white;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition: 0.2s;
 }
 
 button:hover {
-  transform: translateY(-2px);
-  opacity: 0.9;
-}
-
-/* ===== LINKS ===== */
-a {
-  color: #a78bfa;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* ===== PAGE LAYOUT ===== */
-.page-wrapper {
-  max-width: 1200px;
-  margin: auto;
-}
-
-/* ===== NAVBAR (OPTIONAL) ===== */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-}
-
-.navbar h3 {
-  font-size: 20px;
-}
-
-.navbar button {
-  width: auto;
-  padding: 8px 14px;
-  font-size: 13px;
+  opacity: 0.85;
 }
