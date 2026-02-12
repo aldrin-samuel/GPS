@@ -1,53 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Auth Redirect</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-
-<div class="container">
-  <h2>Scheme Finder</h2>
-
-  <button class="google-btn" onclick="googleLogin()">
-    Sign in with Google
-  </button>
-</div>
-
 <script>
 const SUPABASE_URL = "https://glhrtvlhqgamjaqwwehe.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsaHJ0dmxocWdhbWphcXd3ZWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxOTQ4NjYsImV4cCI6MjA4NTc3MDg2Nn0.2w9PaGy7kTKmJ9oBUxZ_E8awGViyYvDZEt1FxrpCQ4Y";
 
 const { createClient } = supabase;
-const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true
-  }
-});
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ✅ If already logged in → redirect properly
 (async () => {
-  const { data: { session } } = await db.auth.getSession();
-  if (session) {
-    redirectUser();
-  }
-})();
-
-async function googleLogin() {
-  await db.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: window.location.origin + "/auth.html"
-    }
-  });
-}
-
-async function redirectUser() {
   const { data: { user } } = await db.auth.getUser();
-  if (!user) return;
+
+  if (!user) {
+    window.location.href = "index.html";
+    return;
+  }
 
   const { data: profile } = await db
     .from("profiles")
@@ -60,8 +31,7 @@ async function redirectUser() {
   } else {
     window.location.href = "profile.html";
   }
-}
+})();
 </script>
-
 </body>
 </html>
