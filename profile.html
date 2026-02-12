@@ -1,23 +1,64 @@
 <!DOCTYPE html>
+<html>
 <head>
-  <title>Create Profile</title>
+  <title>Profile</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<div class="container">
-  <h2>Create Profile</h2>
+<!-- NAVBAR -->
+<div class="navbar">
+  <h3>Scheme Finder</h3>
+  <div class="nav-links">
+    <a href="schemes.html">Schemes</a>
+    <a href="profile.html">Profile</a>
+    <button onclick="logout()">Logout</button>
+  </div>
+</div>
 
-  <input type="text" id="name" placeholder="Name">
+<!-- PROFILE FORM -->
+<div class="container">
+  <h2 id="pageTitle">Create Profile</h2>
+
+  <input type="text" id="name" placeholder="Full Name">
+
   <input type="number" id="age" placeholder="Age">
-  <input type="text" id="gender" placeholder="Gender">
-  <input type="number" id="income" placeholder="Income">
-  <input type="text" id="caste" placeholder="Caste">
-  <input type="text" id="state" placeholder="State">
+
+  <input type="number" id="income" placeholder="Annual Income">
+
+  <!-- Gender Dropdown -->
+  <select id="gender">
+    <option value="">Select Gender</option>
+    <option value="male">Male</option>
+    <option value="female">Female</option>
+    <option value="other">Other</option>
+  </select>
+
+  <!-- Caste Dropdown -->
+  <select id="caste">
+    <option value="">Select Caste</option>
+    <option value="general">General</option>
+    <option value="obc">OBC</option>
+    <option value="sc">SC</option>
+    <option value="st">ST</option>
+  </select>
+
+  <!-- State Dropdown -->
+  <select id="state">
+    <option value="">Select State</option>
+    <option value="tamil nadu">Tamil Nadu</option>
+    <option value="kerala">Kerala</option>
+    <option value="karnataka">Karnataka</option>
+    <option value="andhra pradesh">Andhra Pradesh</option>
+    <option value="telangana">Telangana</option>
+    <option value="maharashtra">Maharashtra</option>
+    <option value="delhi">Delhi</option>
+  </select>
 
   <button onclick="saveProfile()">Save Profile</button>
 </div>
+
 <script>
 const SUPABASE_URL = "https://glhrtvlhqgamjaqwwehe.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsaHJ0dmxocWdhbWphcXd3ZWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxOTQ4NjYsImV4cCI6MjA4NTc3MDg2Nn0.2w9PaGy7kTKmJ9oBUxZ_E8awGViyYvDZEt1FxrpCQ4Y";
@@ -25,35 +66,65 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-window.saveProfile = async function () {
-  const { data: userData } = await db.auth.getUser();
+// 🔥 Load profile if exists (Edit Mode)
+async function loadProfile() {
+  const { data: { user } } = await db.auth.getUser();
 
-  if (!userData.user) {
-    alert("Please login first");
+  if (!user) {
     window.location.href = "index.html";
     return;
   }
 
+  const { data: profile } = await db
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if (profile) {
+    document.getElementById("pageTitle").innerText = "Edit Profile";
+
+    name.value = profile.name;
+    age.value = profile.age;
+    income.value = profile.income;
+    gender.value = profile.gender;
+    caste.value = profile.caste;
+    state.value = profile.state;
+  }
+}
+
+// 💾 Save or Update Profile
+async function saveProfile() {
+  const { data: { user } } = await db.auth.getUser();
+
   const profile = {
-    id: userData.user.id,
-    name: document.getElementById("name").value,
-    age: parseInt(document.getElementById("age").value),
-    gender: document.getElementById("gender").value,
-    income: parseInt(document.getElementById("income").value),
-    caste: document.getElementById("caste").value,
-    state: document.getElementById("state").value
+    id: user.id,
+    name: name.value.trim(),
+    age: parseInt(age.value),
+    income: parseInt(income.value),
+    gender: gender.value,
+    caste: caste.value,
+    state: state.value
   };
 
-  const { error } = await db.from("profiles").insert(profile);
+  const { error } = await db.from("profiles").upsert(profile);
 
   if (error) {
-    alert("Error creating profile");
+    alert("❌ Failed to save profile");
     console.error(error);
     return;
   }
 
   window.location.href = "schemes.html";
-};
+}
+
+// 🚪 Logout
+async function logout() {
+  await db.auth.signOut();
+  window.location.href = "index.html";
+}
+
+loadProfile();
 </script>
 
 </body>
