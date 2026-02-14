@@ -53,15 +53,13 @@
   margin-top: 60px;
 }
 .logout-btn {
-  padding: 4px 10px;
-  font-size: 12px;
+  width: auto;              /* removes full width */
+  padding: 6px 14px;        /* smaller size */
+  font-size: 13px;
   border-radius: 6px;
-  background-color: #444;
+  background: linear-gradient(to right, #4facfe, #7367f0);
   color: white;
   border: none;
   cursor: pointer;
-}
-
-.logout-btn:hover {
-  background-color: #222;
+  display: inline-block;
 }
